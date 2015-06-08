@@ -4196,6 +4196,21 @@ clearRect()	Clears the specified pixels within a given rectangle
       }
       return o;
     }
+    _myTrait_.set = function(childContext, insertObj) {
+      if (insertObj) {
+        if (!this.hasOwnProperty("_inserts")) {
+          this._inserts = {};
+        }
+        if (!this._inserts[childContext])
+          this._inserts[childContext] = [];
+        this._inserts[childContext].length = 0; // remove the old values
+        insertObj.parent(this);
+        this._inserts[childContext].push(insertObj);
+        return;
+      } else {
+        this.set("children", childContext);
+      }
+    }
     _myTrait_.shadow = function(amount, color) {
 
       this.shadowBlur(amount);
