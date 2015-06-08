@@ -70,7 +70,7 @@ ctx.execFn( function(cmd, args) {
 Context object's can be seen as "Templates" by inserting tags to the context command
 
 ```javascript
-ctx.insert("linestyle"); // inserts a tag "linestyle"
+ctx.insert("linestyle"); // inserts a placeholder "linestyle"
 ```
 
 The tag can be substituted by some other context. Let's say you define the style of the line in some other command context like this;
