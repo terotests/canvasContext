@@ -85,12 +85,19 @@ The you can call
 ctx.add("linestyle", lineStyleCtx);
 ```
 
+Or to create just one instance of the style and remove the old
+
+```javascript
+ctx.set("linestyle", lineStyleCtx); // will replace the old definition
+```
+
+
 And after `exec` the commands from `lineStyleCtx` will be run at the postion of the `insert("linestyle")` in the original ctx.
 
 
 Very simple example is here.
 
-http://jsfiddle.net/8r2Lyg95/
+http://jsfiddle.net/fyg1sjyg/
 
 # SVG Output
 
