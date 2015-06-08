@@ -88,10 +88,9 @@ ctx.add("linestyle", lineStyleCtx);
 And after `exec` the commands from `lineStyleCtx` will be run at the postion of the `insert("linestyle")` in the original ctx.
 
 
-
 Very simple example is here.
 
-http://jsfiddle.net/vusfsnfe/
+http://jsfiddle.net/8r2Lyg95/
 
 # SVG Output
 
