@@ -61,11 +61,11 @@ ctx.execFn( function(cmd, args) {
 });
 ```
 
-Rendering to the SVG
+Rendering to the SVG, here the SVG element must be _e() -object
 
 ```javascript
-
-var testOut = mm.svg("", { width:mySize, height:mySize});
+var myDiv = _e(document.body).div(); // Check the _e() library
+var testOut = myDiv.svg("", { width:mySize, height:mySize});
 testOut.width(mySize).height(mySize);   
 ctx.renderSvg(testOut);
 ```
