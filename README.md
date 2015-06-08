@@ -21,28 +21,30 @@ The only difference is the if you are accessing a property like `fillStyle` it m
  ctx.fillStyle("Yellow");
 ```
 
+Example of a function rendering a star, the `ctx` parameter is the canvasContext object.
+
 ```javascript
-    // example of a function to draw a star
-    function star(ctx, x, y, r, p, m)
+// example of a function to draw a star
+function star(ctx, x, y, r, p, m)
+{
+    ctx.save();
+    
+    ctx.beginPath();
+    ctx.fillStyle("Yellow");
+    ctx.strokeStyle("green");
+    ctx.translate(x, y);
+    ctx.moveTo(0,0-r);
+    for (var i = 0; i < p; i++)
     {
-        ctx.save();
-        
-        ctx.beginPath();
-        ctx.fillStyle("Yellow");
-        ctx.strokeStyle("green");
-        ctx.translate(x, y);
-        ctx.moveTo(0,0-r);
-        for (var i = 0; i < p; i++)
-        {
-            ctx.rotate(Math.PI / p);
-            ctx.lineTo(0, 0 - (r*m));
-            ctx.rotate(Math.PI / p);
-            ctx.lineTo(0, 0 - r);
-        }
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - (r*m));
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - r);
     }
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+}
 ```
 
 To finally draw the commands to the canvas
@@ -54,9 +56,9 @@ ctx.exec();
 The commands can be also executed manually
 
 ```javascript
-        ctx.execFn( function(cmd, args) {
-            console.log(cmd, JSON.stringify(args));
-        });
+ctx.execFn( function(cmd, args) {
+    console.log(cmd, JSON.stringify(args));
+});
 ```
 
 Rendering to the SVG
