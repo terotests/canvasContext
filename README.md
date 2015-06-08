@@ -97,7 +97,7 @@ And after `exec` the commands from `lineStyleCtx` will be run at the postion of 
 
 Very simple example is here.
 
-http://jsfiddle.net/fyg1sjyg/
+http://jsfiddle.net/peuy1a1f/
 
 # SVG Output
 
