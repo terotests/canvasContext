@@ -11,7 +11,7 @@ var ctx = canvasContext(<HTML canvas context>);
 
 The point of this library is to be able to record and re-use the commands for the HTML Canvas. One of the interesting uses is to record SVG path commands to a set of direct context commands so that they can be rendered faster.
 
-- http://jsfiddle.net/97w6ydgh/
+- http://jsfiddle.net/31xapxs7/
 
 It is also possible to re-run the commands and render to canvas and SVG targets (using _e() library)
 
