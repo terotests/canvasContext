@@ -13,7 +13,7 @@ Example
 
 http://jsfiddle.net/j9dcsfkf/
 
-You can draw canvas commands to the context almost as if you are using normal canvas
+You can draw canvas commands to the context almost as if you are using normal canvas. The commands can then be recorded and executed against Canvas, SVG or other rendering library.
 
 The only difference is the if you are accessing a property like `fillStyle` it must be converted to a function call like
 
