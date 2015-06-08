@@ -65,6 +65,36 @@ ctx.execFn( function(cmd, args) {
 });
 ```
 
+# Context template support
+
+Context object's can be seen as "Templates" by inserting tags to the context command
+
+```javascript
+ctx.insert("linestyle"); // inserts a tag "linestyle"
+```
+
+The tag can be substituted by some other context. Let's say you define the style of the line in some other command context like this;
+
+```javascript
+var lineStyleCtx = canvasContext( );
+lineStyleCtx.lineWidth(4);
+```
+The you can call
+
+```javascript
+ctx.add("linestyle", lineStyleCtx);
+```
+
+And after `exec` the commands from `lineStyleCtx` will be run at the postion of the `insert("linestyle")` in the original ctx.
+
+
+
+Very simple example is here.
+
+http://jsfiddle.net/vusfsnfe/
+
+# SVG Output
+
 Rendering to the SVG, here the SVG element must be _e() -object
 
 ```javascript
