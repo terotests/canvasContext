@@ -3613,19 +3613,13 @@ var canvasContext_prototype = function() {
             // console.log("Loading image", imgSrc)
             me.promiseImage(imgSrc)
               .then(function(im) {
-                console.log("image loaded ok");
-                console.log(im);
-                console.log(typeof(im));
                 args[0] = im;
                 ctx[fn].apply(ctx, args);
 
               });
           }
-
-
           return;
         }
-
 
         if (fn == "insert") {
           me.forInserts(args[0], function(ch) {
@@ -3650,7 +3644,11 @@ var canvasContext_prototype = function() {
         if (fn == "setProperty") {
           var pName = args[0],
             pValue = args[1];
-          ctx[pName] = pValue;
+          if (me.isFunction(pValue)) {
+            ctx[pName] = pValue(ctx);
+          } else {
+            ctx[pName] = pValue;
+          }
           //         ctx.globalAlpha = args[0];
         } else {
           if (ctx[fn]) ctx[fn].apply(ctx, args);
