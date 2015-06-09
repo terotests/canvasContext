@@ -3861,7 +3861,6 @@ var canvasContext_prototype = function() {
             console.log("Setting value to ", fname);
 
             if (me.isStream(v)) {
-              alert("Had a stream!!! ");
               var cmd = [
                 "waitValue",
                 argArr,
