@@ -115,3 +115,9 @@ ctx.renderSvg(testOut);
 Example is here
 
 http://jsfiddle.net/no8fg4j4/
+
+
+# Problems still
+
+- linear / radial gradients must be handled outside the pipeline
+- SVG output is not good enought for production use
