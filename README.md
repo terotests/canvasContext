@@ -108,10 +108,10 @@ var myDiv = _e(document.body).div(); // Check the _e() library
 var testOut = myDiv.svg("", { width:mySize, height:mySize});
 testOut.width(mySize).height(mySize);   
 ctx.renderSvg(testOut);
+```
 
 # Streaming Bacon.js to the style properties
 
 Example is here
 
 http://jsfiddle.net/no8fg4j4/
-```
