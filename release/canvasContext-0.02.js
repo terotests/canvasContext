@@ -3822,16 +3822,15 @@ var canvasContext_prototype = function() {
         me[fname] = function() {
           me._undoBuffer = [];
           var args = Array.prototype.slice.call(arguments);
-          /*
-        args.forEach( function(arg, i) {
-            if(me.isStream(arg)) {
-                args[i] = null; // Not ready to draw
-                arg.onValue( function(v) {
-                    args[i] = v;
-                });
+
+          args.forEach(function(arg, i) {
+            if (me.isStream(arg)) {
+              args[i] = null; // Not ready to draw
+              arg.onValue(function(v) {
+                args[i] = v;
+              });
             }
-        });
-        */
+          });
 
           me._commands.push([
             fname,
