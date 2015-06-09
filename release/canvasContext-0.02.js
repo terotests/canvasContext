@@ -3792,7 +3792,7 @@ var canvasContext_prototype = function() {
           args,
           time
         ]);
-        return canvasContext();
+        return this;
       }
 
       me["create"] = function() {
@@ -3809,10 +3809,12 @@ var canvasContext_prototype = function() {
 
       me["clipMask"] = function() {
         me.insert("clipMask");
+        return;
       }
 
       me["children"] = function() {
         me.insert("children");
+        return this;
       }
 
 
@@ -3836,6 +3838,7 @@ var canvasContext_prototype = function() {
             args,
             time
           ]);
+          return this;
         }
       });
 
