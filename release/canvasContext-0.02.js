@@ -1329,6 +1329,7 @@ var canvasContext_prototype = function() {
   if (typeof(window) != 'undefined') window['later'] = later;
   if (typeof(window) != 'undefined') window['later_prototype'] = later_prototype;
   var svgPathParser_prototype = function() {
+    'use strict';
     var jsVectors_prototype = function() {;
       (function(_myTrait_) {
         var projectionMatrix;
@@ -1783,7 +1784,2091 @@ var canvasContext_prototype = function() {
     };
     jsVectors.prototype = new jsVectors_prototype();
     if (typeof(window) != 'undefined') window['jsVectors'] = jsVectors;
-    if (typeof(window) != 'undefined') window['jsVectors_prototype'] = jsVectors_prototype;;
+    if (typeof(window) != 'undefined') window['jsVectors_prototype'] = jsVectors_prototype;
+    var quaternion_prototype = function() {
+      var jsVectors_prototype = function() {;
+        (function(_myTrait_) {
+          var projectionMatrix;
+          var jVect;
+          var iVect;
+          var pBase;
+          var tn1;
+          var nv1;
+          var barCoeffs;
+          var deVector;
+          _myTrait_.add = function(v1, v2) {
+
+            v1.x = v1.x + v2.x;
+            v1.y = v1.y + v2.y;
+
+          }
+          _myTrait_.angleBetween = function(v1, v2) {
+
+            var n1 = this.normalize({
+              x: v1.x,
+              y: v1.y
+            });
+            var n2 = this.normalize({
+              x: v2.x,
+              y: v2.y
+            });
+
+            var cp = this.crossProd(n1, n2);
+            var dp = this.dotProd(n1, n2);
+
+            var a = Math.acos(dp);
+            if (cp < 0) a = a * -1; // other side...
+            return a;
+
+          }
+          _myTrait_.calc_cat = function(t, p0, p1, p2, p3) {
+
+            var t2 = t * t;
+            var t3 = t2 * t;
+            return (0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3));
+
+          }
+          _myTrait_.crossProd = function(v1, v2) {
+
+            // U x V = Ux*Vy-Uy*Vx
+            return v1.x * v2.y - v1.y * v2.x;
+
+          }
+          _myTrait_.diff = function(p1, p2) {
+
+            return {
+              x: p2.x - p1.x,
+              y: p2.y - p1.y
+            };
+
+          }
+          _myTrait_.dist = function(p1, p2) {
+
+            var dx = p1.x - p2.x;
+            var dy = p1.y - p2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+
+          }
+          _myTrait_.dotProd = function(v1, v2) {
+
+            return v1.x * v2.x + v1.y * v2.y;
+
+          }
+          _myTrait_.getBarCoeffs = function(p0, p1, p2) {
+
+            var bb = barCoeffs;
+            bb.A = 1 / 2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y);
+            bb.sign = bb.A < 0 ? -1 : 1;
+            bb.s1 = (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y)) * bb.sign;
+            bb.s2 = (p2.y - p0.y) * bb.sign;
+            bb.s3 = (p0.x - p2.x) * bb.sign;
+            bb.t1 = (p0.x * p1.y - p0.y * p1.x) * bb.sign;
+            bb.t2 = (p0.y - p1.y) * bb.sign;
+            bb.t3 = (p1.x - p0.x) * bb.sign;
+            return bb;
+
+          }
+          if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit"))
+            _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+          if (!_myTrait_.__traitInit) _myTrait_.__traitInit = []
+          _myTrait_.__traitInit.push(function(t) {
+
+            if (!tn1) {
+
+              tn1 = {
+                x: 0,
+                y: 0
+              };
+              nv1 = {
+                x: 0,
+                y: 0
+              };
+
+              projectionMatrix = [0, 0, 0, 0];
+
+              jVect = {
+                x: 0,
+                y: 0
+              };
+              iVect = {
+                x: 0,
+                y: 0
+              };
+              pBase = {
+                x: 0,
+                y: 0
+              };
+
+              barCoeffs = {
+                Area: 0,
+                s1: 0,
+                s2: 0,
+                s3: 0,
+                t1: 0,
+                t2: 0,
+                t3: 0,
+                sign: 0
+              };
+              deVector = {
+                x: 0,
+                y: 0
+              };
+
+            }
+          });
+          _myTrait_.initProjection = function(p1, p2) {
+
+            iVect.y = p2.y - p1.y;
+            iVect.x = p2.x - p1.x;
+
+            jVect.y = iVect.y;
+            jVect.x = iVect.x;
+
+            this.normalize(iVect);
+            this.normalize(jVect);
+
+            this.rotate(jVect, Math.PI / 2);
+
+            pBase.x = p1.x;
+            pBase.y = p1.y;
+
+
+          }
+          _myTrait_.length = function(p1) {
+
+            var dx = p1.x;
+            var dy = p1.y;
+            return Math.sqrt(dx * dx + dy * dy);
+
+          }
+          _myTrait_.linesIntersect = function(p0, p1, v0, v1) {
+
+            var x1 = p0.x,
+              y1 = p0.y,
+              x2 = p1.x,
+              y2 = p1.y,
+              x3 = v0.x,
+              y3 = v0.y,
+              x4 = v1.x,
+              y4 = v1.y;
+
+            var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+            var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+            if (isNaN(x) || isNaN(y)) {
+              return false;
+            } else {
+              if (x1 >= x2) {
+                if (!(x2 <= x && x <= x1)) {
+                  return false;
+                }
+              } else {
+                if (!(x1 <= x && x <= x2)) {
+                  return false;
+                }
+              }
+              if (y1 >= y2) {
+                if (!(y2 <= y && y <= y1)) {
+                  return false;
+                }
+              } else {
+                if (!(y1 <= y && y <= y2)) {
+                  return false;
+                }
+              }
+              if (x3 >= x4) {
+                if (!(x4 <= x && x <= x3)) {
+                  return false;
+                }
+              } else {
+                if (!(x3 <= x && x <= x4)) {
+                  return false;
+                }
+              }
+              if (y3 >= y4) {
+                if (!(y4 <= y && y <= y3)) {
+                  return false;
+                }
+              } else {
+                if (!(y3 <= y && y <= y4)) {
+                  return false;
+                }
+              }
+            }
+            return true;
+
+          }
+          _myTrait_.mirrorVector = function(v1, along, base) {
+
+            // the direction tangent and normal are normalized and the vector is projected into it            
+            tn1.x = along.x - base.x;
+            tn1.y = along.y - base.y;
+            nv1.x = -tn1.y;
+            nv1.y = tn1.x;
+
+            v1.x = v1.x - base.x;
+            v1.y = v1.y - base.y;
+
+            // if the 'j' or normal projection is positive, turn around
+            if (this.dotProd(v1, nv1) > 0)
+              this.rotate(nv1, Math.PI);
+
+            this.normalize(tn1);
+            this.normalize(nv1);
+
+            // Create positive coordinates of the projection of the vector to the 'base' cordinates
+            var nvProd = Math.abs(this.dotProd(v1, nv1));
+            //             tnProd = Math.abs( this.dotProd(v1,tn1) );
+
+            var tnProd = this.dotProd(v1, tn1);
+            // then, project the length of the base vectors to get the new vector space
+            v1.x = nv1.x * nvProd + tn1.x * tnProd,
+            v1.y = nv1.y * nvProd + tn1.y * tnProd;
+
+            v1.x += base.x;
+            v1.y += base.y;
+
+            return v1;
+
+          }
+          _myTrait_.normalize = function(v) {
+
+            var len = Math.sqrt(v.x * v.x + v.y * v.y);
+
+            if (len == 0) {
+              throw "Error normalizing vector: the length of the vector was zero";
+            }
+
+            v.x = v.x / len;
+            v.y = v.y / len;
+            return v;
+
+          }
+          _myTrait_.opposeVector = function(v1, along) {
+
+
+            // the direction tangent and normal are normalized and the vector is projected into it            
+            tn1.x = along, x;
+            tn1.y = along.y;
+            nv1.x = -tn1.y;
+            nv1.y = tn1.x;
+
+            this.normalize(tn1);
+            this.normalize(nv1);
+
+            // Important: turn the tangent to opposing direction...
+            this.rotate(tn1, Math.PI);
+
+            // Create the projection of the vector to the 'base' cordinates
+            var nvProd = Math.abs(jsMath.dotProd(v1, nv1)),
+              tnProd = Math.abs(jsMath.dotProd(v1, tn1));
+
+            // if the 'j' or normal projection is negative, turn around
+            if (this.dotProd(v1, nv1) < 0)
+              this.rotate(nv1, Math.PI);
+
+            // then, project the length of the vector to get the new vector
+            v1.x = nv1.x * nvProd + tn1.x * tnProd,
+            v1.y = nv1.y * nvProd + tn1.y * tnProd;
+
+            return v1;
+
+          }
+          _myTrait_.pointInTriangle = function(p, p0, p1, p2) {
+
+
+            var A = 1 / 2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y);
+            var sign = A < 0 ? -1 : 1;
+            var s = (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y) * sign;
+            var t = (p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y) * sign;
+
+            return s > 0 && t > 0 && (s + t) < 2 * A * sign;
+
+
+          }
+          _myTrait_.pointInTriangleBc = function(p, bb) {
+
+            var A = bb.A;
+            var sign = bb.sign;
+            var s = (bb.s1 + bb.s2 * p.x + bb.s3 * p.y);
+            var t = (bb.t1 + bb.t2 * p.x + bb.t3 * p.y);
+
+            return s > 0 && t > 0 && (s + t) < 2 * A * sign;
+
+
+          }
+          _myTrait_.project = function(vectorToProject) {
+
+
+            var p = vectorToProject;
+
+            pVector.x = p.x - pBase.x;
+            pVector.y = p.y - pBase.y;
+
+            prodResult.i = this.dotProd(pVector, iVect);
+            prodResult.j = this.dotProd(pVector, jVect);
+
+            return prodResult;
+
+          }
+          _myTrait_.rotate = function(v, angle) {
+
+
+            var s = Math.sin(angle);
+            var c = Math.cos(angle);
+
+            var x = v.x,
+              y = v.y;
+
+            v.x = x * c + y * s;
+            v.y = -x * s + y * c;
+
+            return v;
+
+          }
+          _myTrait_.rotateAround = function(angle, v, around) {
+
+            this.sub(v, around);
+            this.rotate(v, angle);
+            this.add(v, around);
+
+          }
+          _myTrait_.sub = function(v1, v2) {
+
+            v1.x = v1.x - v2.x;
+            v1.y = v1.y - v2.y;
+
+          }
+          _myTrait_.tangentNormal = function(v1, v2, v3) {
+
+
+            var t1 = {};
+            t1.x = v2.x - v1.x;
+            t1.y = v2.y - v1.y;
+            var t2 = {};
+            t2.x = v3.x - v2.x;
+            t2.y = v3.y - v2.y;
+
+            var p = {
+              x: t1.x + t2.x,
+              y: t1.y + t2.y
+            };
+            return this.normalize(p);
+
+          }
+          _myTrait_.triangleArea = function(A, B, C) {
+
+
+            var area = A.x * (B.y - C.y) +
+              B.x * (C.y - A.y) +
+              C.x * (A.y - B.y);
+
+            return Math.abs(area / 2);
+
+          }
+          _myTrait_.triangleInTriangle = function(p0, p1, p2, q0, q1, q2) {
+
+
+            var bb = this.getBarCoeffs(p0, p1, p2);
+
+            if (this.pointInTriangleBc(q0, bb)) return true;
+            if (this.pointInTriangleBc(q1, bb)) return true;
+            if (this.pointInTriangleBc(q2, bb)) return true;
+
+            var bb = this.getBarCoeffs(q0, q1, q2);
+
+            if (this.pointInTriangleBc(p0, bb)) return true;
+            if (this.pointInTriangleBc(p1, bb)) return true;
+            if (this.pointInTriangleBc(p2, bb)) return true;
+
+
+            if (this.linesIntersect(p0, p1, q0, q1)) return true;
+            if (this.linesIntersect(p1, p2, q0, q1)) return true;
+            if (this.linesIntersect(p2, p0, q0, q1)) return true;
+
+            if (this.linesIntersect(p0, p1, q1, q2)) return true;
+            if (this.linesIntersect(p1, p2, q1, q2)) return true;
+            if (this.linesIntersect(p2, p0, q1, q2)) return true;
+
+            if (this.linesIntersect(p0, p1, q2, q0)) return true;
+            if (this.linesIntersect(p1, p2, q2, q0)) return true;
+            if (this.linesIntersect(p2, p0, q2, q0)) return true;
+
+            return false;
+
+          }
+          _myTrait_.unProject = function(projectedVector) {
+
+            var p = projectedVector;
+            deVector.x = p.i * iVect.x + p.j * jVect.x;
+            deVector.y = p.i * iVect.y + p.j * jVect.y;
+
+            deVector.x += pBase.x;
+            deVector.y += pBase.y;
+            return deVector;
+
+          }
+        }(this));
+      }
+      var jsVectors = function(a, b, c, d, e, f, g, h) {
+        if (this instanceof jsVectors) {
+          var args = [a, b, c, d, e, f, g, h];
+          if (this.__factoryClass) {
+            var m = this;
+            var res;
+            this.__factoryClass.forEach(function(initF) {
+              res = initF.apply(m, args);
+            });
+            if (Object.prototype.toString.call(res) == '[object Function]') {
+              if (res._classInfo.name != jsVectors._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+            } else {
+              if (res) return res;
+            }
+          }
+          if (this.__traitInit) {
+            var m = this;
+            this.__traitInit.forEach(function(initF) {
+              initF.apply(m, args);
+            })
+          } else {
+            if (typeof this.init == 'function')
+              this.init.apply(this, args);
+          }
+        } else return new jsVectors(a, b, c, d, e, f, g, h);
+      };
+      jsVectors._classInfo = {
+        name: 'jsVectors'
+      };
+      jsVectors.prototype = new jsVectors_prototype();
+      if (typeof(window) != 'undefined') window['jsVectors'] = jsVectors;
+      if (typeof(window) != 'undefined') window['jsVectors_prototype'] = jsVectors_prototype;;
+      (function(_myTrait_) {
+        _myTrait_.copy = function(q) {
+          this.x = q.x;
+          this.y = q.y;
+          this.z = q.z;
+          this.w = q.w;
+        }
+        if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit"))
+          _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+        if (!_myTrait_.__traitInit) _myTrait_.__traitInit = []
+        _myTrait_.__traitInit.push(function(x, y, z, w) {
+          this.x = x || 0;
+          this.y = y || 0;
+          this.z = z || 0;
+          this.w = (w !== undefined) ? w : 1;
+
+        });
+        _myTrait_.inverse = function(t) {
+          this.x *= -1;
+          this.y *= -1;
+          this.z *= -1;
+          return this;
+        }
+        _myTrait_.multiply = function(q1, q2) {
+
+          if (!q2) {
+            q2 = q1;
+            q1 = this;
+          }
+
+          var x = q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
+          var y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
+          var z = q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
+          var w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
+
+          this.x = x;
+          this.y = y;
+          this.z = z;
+          this.w = w;
+
+          return this;
+        }
+        _myTrait_.normalizeVector3D = function(v) {
+          var len = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+
+          if (len == 0 || isNaN(len)) return {
+            x: 1,
+            y: 0,
+            z: 0
+          };
+
+          return {
+            x: v.x / len,
+            y: v.y / len,
+            z: v.z / len
+          };
+
+        }
+        _myTrait_.projectVector = function(vector) {
+          var dest = {
+            x: 0,
+            y: 0,
+            z: 0
+          };
+
+          // p=q∗vq
+
+          var x = vector.x,
+            y = vector.y,
+            z = vector.z,
+            qx = this.x,
+            qy = this.y,
+            qz = this.z,
+            qw = this.w;
+
+          // calculate quat * vector
+
+          var ix = qw * x + qy * z - qz * y,
+            iy = qw * y + qz * x - qx * z,
+            iz = qw * z + qx * y - qy * x,
+            iw = -qx * x - qy * y - qz * z;
+
+          // calculate result * inverse quat
+
+          dest.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+          dest.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+          dest.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+
+          return dest;
+
+        }
+        _myTrait_.rotate = function(r) {
+          this.setFromAxisRotation({
+            x: 0,
+            y: 0,
+            z: 1
+          }, r);
+
+          return this;
+        }
+        _myTrait_.setFromAxisRotation = function(v, rot) {
+
+          v = this.normalizeVector3D(v);
+
+          var halfAngle = rot / 2,
+            s = Math.sin(halfAngle);
+
+          this.x = v.x * s;
+          this.y = v.y * s;
+          this.z = v.z * s;
+          this.w = Math.cos(halfAngle);
+
+          return this;
+
+        }
+      }(this));
+    }
+    var quaternion = function(a, b, c, d, e, f, g, h) {
+      if (this instanceof quaternion) {
+        var args = [a, b, c, d, e, f, g, h];
+        if (this.__factoryClass) {
+          var m = this;
+          var res;
+          this.__factoryClass.forEach(function(initF) {
+            res = initF.apply(m, args);
+          });
+          if (Object.prototype.toString.call(res) == '[object Function]') {
+            if (res._classInfo.name != quaternion._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+          } else {
+            if (res) return res;
+          }
+        }
+        if (this.__traitInit) {
+          var m = this;
+          this.__traitInit.forEach(function(initF) {
+            initF.apply(m, args);
+          })
+        } else {
+          if (typeof this.init == 'function')
+            this.init.apply(this, args);
+        }
+      } else return new quaternion(a, b, c, d, e, f, g, h);
+    };
+    quaternion._classInfo = {
+      name: 'quaternion'
+    };
+    quaternion.prototype = new quaternion_prototype();
+    if (typeof(window) != 'undefined') window['quaternion'] = quaternion;
+    if (typeof(window) != 'undefined') window['quaternion_prototype'] = quaternion_prototype;
+    var jsBezierCurve_prototype = function() {;
+      (function(_myTrait_) {
+        var jsMath;
+        _myTrait_.derivate = function(d, t) {
+
+
+          var P0 = this._points[d][0],
+            P1 = this._points[d][1],
+            P2 = this._points[d][2],
+            P3 = this._points[d][3];
+
+          var t2 = t * t;
+          var nt = 1 - t;
+          var nt2 = nt * nt;
+
+          // dP(t) / dt =  -3(1-t)^2 * P0 + 3(1-t)^2 * P1 - 6t(1-t) * P1 - 3t^2 * P2 + 6t(1-t) * P2 + 3t^2 * P3
+          // or from Wikipedia
+          // 
+          // F(t)/dt = 3*nt2 * (P1-P0) + 6*t*nt*(P2-P1) + 3*t2*(P3-P2)
+
+          // var derivative = -3*nt2* P0 + 3*nt2 * P1 - 6*t*nt*P1 - 3*t2 * P2 + 6*t*nt * P2 + 3*t2 * P3;
+
+          // This should give the exact derivate of the point at certain position
+          var FT_dt = 3 * nt2 * (P1 - P0) + 6 * t * nt * (P2 - P1) + 3 * t2 * (P3 - P2);
+          return FT_dt;
+
+        }
+        _myTrait_.distanceOf = function(x, y) {
+
+          var t = this.findClosestT(x, y);
+          var dx = this.x(t) - x,
+            dy = this.y(t) - y;
+          return Math.sqrt(dx * dx + dy * dy);
+
+        }
+        _myTrait_.findClosestT = function(x, y) {
+
+          var tStart = 0,
+            tMiddle = 0.5,
+            tEnd = 1;
+          var iterations = 10;
+
+          while (iterations--) {
+            var d0_x = this.x(tStart) - x,
+              d0_y = this.y(tStart) - y,
+              d2_x = this.x(tEnd) - x,
+              d2_y = this.y(tEnd) - y;
+            var d0 = Math.sqrt(d0_x * d0_x + d0_y * d0_y),
+              d2 = Math.sqrt(d2_x * d2_x + d2_y * d2_y);
+
+            if (d0 < d2) {
+              tEnd = tMiddle;
+            } else {
+              tStart = tMiddle;
+            }
+            tMiddle = tStart + (tEnd - tStart) / 2;
+          }
+          var d0_x = this.x(tStart) - x,
+            d0_y = this.y(tStart) - y,
+            d1_x = this.x(tMiddle) - x,
+            d1_y = this.y(tMiddle) - y;
+          d2_x = this.x(tEnd) - x,
+          d2_y = this.y(tEnd) - y;
+          var d0 = Math.sqrt(d0_x * d0_x + d0_y * d0_y),
+            d1 = Math.sqrt(d1_x * d1_x + d1_y * d1_y),
+            d2 = Math.sqrt(d2_x * d2_x + d2_y * d2_y);
+
+          if (d0 < d1 && d0 < d2) return tStart;
+          if (d2 < d1 && d2 < d0) return tEnd;
+          return tMiddle;
+
+        }
+        _myTrait_.fitListTo = function(list) {
+
+          var start = {
+            x: list[0].point_x(0),
+            y: list[0].point_y(0)
+          };
+
+          var ei = list.length - 1;
+
+          var end = {
+            x: list[ei].point_x(3),
+            y: list[ei].point_y(3)
+          };
+
+          // what we have here is a list of segments, starting from (x,y) ending to (x2,y2)
+          // have to rotate
+          // have to scale
+
+          var myStart = {
+            x: this.x(0),
+            y: this.y(0)
+          };
+          var myEnd = {
+            x: this.x(1),
+            y: this.y(1)
+          };
+          var dx = myEnd.x - myStart.x,
+            dy = myEnd.y - myStart.y;
+
+          var myLen = Math.sqrt(dx * dx + dy * dy);
+
+          var ldx = end.x - start.x,
+            ldy = end.y - start.y;
+
+          var listLen = Math.sqrt(ldx * ldx + ldy * ldy);
+          var relAngle = jsMath.angleBetween({
+            x: dx,
+            y: dy
+          }, {
+            x: ldx,
+            y: ldy
+          });
+
+          // TODO: convert to path parser fromBezierArray()
+          // make a quaternion list
+          // scale & rotate the quaternion data to create new path
+
+
+
+
+        }
+        _myTrait_.fromLine = function(p0, p1) {
+
+          var len = p1.x - p0.x;
+          var step = len / 3;
+          this.initCoeffs(0, p0.x, p0.x + step, p0.x + step * 2, p1.x);
+
+          var len = p1.y - p0.y;
+          var step = len / 3;
+          this.initCoeffs(1, p0.y, p0.y + step, p0.y + step * 2, p1.y);
+
+
+        }
+        _myTrait_.fromPoints = function(p0, p1, p2, p3) {
+          this.initCoeffs(0, p0.x, p1.x, p2.x, p3.x);
+          this.initCoeffs(1, p0.y, p1.y, p2.y, p3.y);
+        }
+        _myTrait_.fromQuadCurve = function(p0, p1, p2) {
+          //CP1 = QP0 + 2/3 *(QP1-QP0)
+          //CP2 = QP2 + 2/3 *(QP1-QP2)
+          this.initCoeffs(0, p0.x, p0.x + (2 / 3) * (p1.x - p0.x), p2.x + (2 / 3) * (p1.x - p2.x), p2.x);
+          this.initCoeffs(0, p0.y, p0.y + (2 / 3) * (p1.y - p0.y), p2.y + (2 / 3) * (p1.y - p2.y), p2.y);
+
+        }
+        if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit"))
+          _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+        if (!_myTrait_.__traitInit) _myTrait_.__traitInit = []
+        _myTrait_.__traitInit.push(function(t) {
+
+          this._points = [];
+          this._m = [];
+
+          if (!jsMath) jsMath = jsVectors();
+        });
+        _myTrait_.initCoeffs = function(d, v0, v1, v2, v3) {
+
+          if (!this._coeffs)
+            this._coeffs = [];
+
+          if (!this._coeffs[d]) this._coeffs[d] = [];
+          if (!this._points[d]) this._points[d] = [];
+
+          // the actual points used in each dimension
+          this._points[d][0] = v0;
+          this._points[d][1] = v1;
+          this._points[d][2] = v2;
+          this._points[d][3] = v3;
+
+          var c = this._coeffs[d];
+          c[0] = 3 * (v1 - v0);
+          c[1] = 3 * (v2 - v1) - c[0];
+          c[2] = v3 - v0 - c[0] - c[1];
+          c[3] = v0;
+          /*
+                   if(d==0) {
+                       this._m[0].x = v0;
+                       this._m[1].x = v1;
+                       this._m[2].x = v2;
+                       this._m[3].x = v3;
+                   }  
+                   if(d==1) {
+                       this._m[0].y = v0;
+                       this._m[1].y = v1;
+                       this._m[2].y = v2;
+                       this._m[3].y = v3;
+                   }
+           */
+
+        }
+        _myTrait_.inverseProject = function(projection) {
+
+
+          var pt = projection.t;
+
+          var n = this.normal(pt, true);
+
+          var p_x = n.x * projection.nvProd + this.x(pt),
+            p_y = n.y * projection.nvProd + this.y(pt);
+
+          var t = this.tangent(pt, true);
+
+          p_x = p_x + projection.tangetProd * t.x;
+          p_y = p_y + projection.tangetProd * t.y;
+
+          // inverse x and inverse y
+          projection.ix = p_x;
+          projection.iy = p_y;
+
+
+        }
+        _myTrait_.mirrorControls = function(t) {
+
+          var base = {
+            x: this._points[0][0],
+            y: this._points[1][0]
+          };
+
+          var along = {
+            x: this._points[0][3],
+            y: this._points[1][3]
+          };
+
+          var v1 = {
+            x: this._points[0][1],
+            y: this._points[1][1]
+          };
+          var v2 = {
+            x: this._points[0][2],
+            y: this._points[1][2]
+          };
+
+          jsMath.mirrorVector(v1, along, base);
+          jsMath.mirrorVector(v2, along, base);
+
+          this.initCoeffs(0, base.x, v1.x, v2.x, along.x);
+          this.initCoeffs(1, base.y, v1.y, v2.y, along.y);
+
+        }
+        _myTrait_.normal = function(t, bUnitVector) {
+
+          var v = this.tangent(t);
+          // direction of the curve at certain point...
+          var vx = v.x;
+          v.x = -v.y;
+          v.y = vx;
+          if (bUnitVector) jsMath.normalize(v);
+          return v;
+
+        }
+        _myTrait_.point_x = function(i) {
+
+          return this._points[0][i];
+
+        }
+        _myTrait_.point_y = function(i) {
+
+          return this._points[1][i];
+
+        }
+        _myTrait_.points = function() {
+
+          return this._m;
+
+        }
+        _myTrait_.projectPoint = function(x, y, projection) {
+
+
+          // logaritmic function ? 
+
+          var maxCnt = 20;
+          var t = 0.5,
+            step = 0.25; // start from the middle
+
+          while (maxCnt--) {
+
+            // We try to find a point where the projection to the tangent is as small as possible
+            var tn = this.tangent(t, true);
+            dv.x = x - this.x(t);
+            dv.y = y - this.y(t);
+            var prod = dv.x * tn.x + dv.y * tn.y;
+
+            // close enough
+            if (Math.abs(prod) < 0.05) {
+              // found it...
+              break;
+            }
+            if (prod > 0) {
+              t += step;
+            } else {
+              t += -step;
+            }
+            step = step / 2;
+          }
+
+          var n = this.normal(t, true);
+          if (!projection) projection = {};
+          projection.tangentProd = prod;
+          projection.nvProd = n.x * dv.x + n.y * d.y;
+          projection.nv_x = n.x;
+          projection.nv_y = n.y;
+          projection.tn_x = tn.x;
+          projection.tn_y = tn.y;
+          projection.ix = 0; // when projected back, the inversed coords here
+          projection.iy = 0;
+          projection.t = t;
+
+          return projection;
+
+        }
+        _myTrait_.setControls = function(p0, p1, p2, p3, fn) {
+
+          this.initCoeffs(0, p0.x, p1.x, p2.x, p3.x);
+          this.initCoeffs(1, p0.y, p1.y, p2.y, p3.y);
+
+
+        }
+        _myTrait_.split = function(t) {
+
+
+          var plist = this._points[0];
+          var v1 = this.splitCoeff(plist[0], plist[1], plist[2], plist[3], t);
+          plist = this._points[1];
+          var v2 = this.splitCoeff(plist[0], plist[1], plist[2], plist[3], t);
+
+          this.fromPoints({
+            x: v1.p0,
+            y: v2.p0
+          }, {
+            x: v1.p1,
+            y: v2.p1
+          }, {
+            x: v1.p2,
+            y: v2.p2
+          }, {
+            x: v1.p3,
+            y: v2.p3
+          });
+
+          var b2 = jsBezierCurve();
+          b2.fromPoints({
+            x: v1.p3,
+            y: v2.p3
+          }, {
+            x: v1.p4,
+            y: v2.p4
+          }, {
+            x: v1.p5,
+            y: v2.p5
+          }, {
+            x: v1.p6,
+            y: v2.p6
+          });
+
+          return b2;
+
+        }
+        _myTrait_.splitCoeff = function(P0, P1, P2, P3, t) {
+          var v = {};
+          v.p0 = P0;
+          v.p1 = (1 - t) * P0 + t * P1;
+          var m2 = (1 - t) * P1 + t * P2;
+          v.p5 = (1 - t) * P2 + t * P3;
+
+          v.p2 = (1 - t) * v.p1 + t * m2;
+          v.p4 = (1 - t) * m2 + t * v.p5;
+          v.p3 = (1 - t) * v.p2 + t * v.p4;
+          v.p6 = P3;
+
+          return v;
+        }
+        _myTrait_.step = function(t, dim) {
+
+          if (!this._coeffs) return;
+          var c = this._coeffs[dim];
+          if (!c) return;
+          var t2 = t * t,
+            t3 = t2 * t;
+          return c[2] * t3 + c[1] * t2 + c[0] * t + c[3];
+
+        }
+        _myTrait_.tangent = function(t, bUnitVector) {
+
+          // direction of the curve at certain point...
+          var nv = {};
+          nv.x = this.derivate(0, t);
+          nv.y = this.derivate(1, t);
+          if (bUnitVector) jsMath.normalize(nv);
+          return nv;
+
+        }
+        _myTrait_.x = function(t) {
+
+          return this.step(t, 0);
+
+        }
+        _myTrait_.y = function(t) {
+
+          return this.step(t, 1);
+
+        }
+        _myTrait_.z = function(t) {
+          return this.step(t, 2);
+        }
+      }(this));
+    }
+    var jsBezierCurve = function(a, b, c, d, e, f, g, h) {
+      if (this instanceof jsBezierCurve) {
+        var args = [a, b, c, d, e, f, g, h];
+        if (this.__factoryClass) {
+          var m = this;
+          var res;
+          this.__factoryClass.forEach(function(initF) {
+            res = initF.apply(m, args);
+          });
+          if (Object.prototype.toString.call(res) == '[object Function]') {
+            if (res._classInfo.name != jsBezierCurve._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+          } else {
+            if (res) return res;
+          }
+        }
+        if (this.__traitInit) {
+          var m = this;
+          this.__traitInit.forEach(function(initF) {
+            initF.apply(m, args);
+          })
+        } else {
+          if (typeof this.init == 'function')
+            this.init.apply(this, args);
+        }
+      } else return new jsBezierCurve(a, b, c, d, e, f, g, h);
+    };
+    jsBezierCurve._classInfo = {
+      name: 'jsBezierCurve'
+    };
+    jsBezierCurve.prototype = new jsBezierCurve_prototype();
+    if (typeof(window) != 'undefined') window['jsBezierCurve'] = jsBezierCurve;
+    if (typeof(window) != 'undefined') window['jsBezierCurve_prototype'] = jsBezierCurve_prototype;
+    var pathIterator_prototype = function() {
+      var jsVectors_prototype = function() {;
+        (function(_myTrait_) {
+          var projectionMatrix;
+          var jVect;
+          var iVect;
+          var pBase;
+          var tn1;
+          var nv1;
+          var barCoeffs;
+          var deVector;
+          _myTrait_.add = function(v1, v2) {
+
+            v1.x = v1.x + v2.x;
+            v1.y = v1.y + v2.y;
+
+          }
+          _myTrait_.angleBetween = function(v1, v2) {
+
+            var n1 = this.normalize({
+              x: v1.x,
+              y: v1.y
+            });
+            var n2 = this.normalize({
+              x: v2.x,
+              y: v2.y
+            });
+
+            var cp = this.crossProd(n1, n2);
+            var dp = this.dotProd(n1, n2);
+
+            var a = Math.acos(dp);
+            if (cp < 0) a = a * -1; // other side...
+            return a;
+
+          }
+          _myTrait_.calc_cat = function(t, p0, p1, p2, p3) {
+
+            var t2 = t * t;
+            var t3 = t2 * t;
+            return (0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3));
+
+          }
+          _myTrait_.crossProd = function(v1, v2) {
+
+            // U x V = Ux*Vy-Uy*Vx
+            return v1.x * v2.y - v1.y * v2.x;
+
+          }
+          _myTrait_.diff = function(p1, p2) {
+
+            return {
+              x: p2.x - p1.x,
+              y: p2.y - p1.y
+            };
+
+          }
+          _myTrait_.dist = function(p1, p2) {
+
+            var dx = p1.x - p2.x;
+            var dy = p1.y - p2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+
+          }
+          _myTrait_.dotProd = function(v1, v2) {
+
+            return v1.x * v2.x + v1.y * v2.y;
+
+          }
+          _myTrait_.getBarCoeffs = function(p0, p1, p2) {
+
+            var bb = barCoeffs;
+            bb.A = 1 / 2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y);
+            bb.sign = bb.A < 0 ? -1 : 1;
+            bb.s1 = (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y)) * bb.sign;
+            bb.s2 = (p2.y - p0.y) * bb.sign;
+            bb.s3 = (p0.x - p2.x) * bb.sign;
+            bb.t1 = (p0.x * p1.y - p0.y * p1.x) * bb.sign;
+            bb.t2 = (p0.y - p1.y) * bb.sign;
+            bb.t3 = (p1.x - p0.x) * bb.sign;
+            return bb;
+
+          }
+          if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit"))
+            _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+          if (!_myTrait_.__traitInit) _myTrait_.__traitInit = []
+          _myTrait_.__traitInit.push(function(t) {
+
+            if (!tn1) {
+
+              tn1 = {
+                x: 0,
+                y: 0
+              };
+              nv1 = {
+                x: 0,
+                y: 0
+              };
+
+              projectionMatrix = [0, 0, 0, 0];
+
+              jVect = {
+                x: 0,
+                y: 0
+              };
+              iVect = {
+                x: 0,
+                y: 0
+              };
+              pBase = {
+                x: 0,
+                y: 0
+              };
+
+              barCoeffs = {
+                Area: 0,
+                s1: 0,
+                s2: 0,
+                s3: 0,
+                t1: 0,
+                t2: 0,
+                t3: 0,
+                sign: 0
+              };
+              deVector = {
+                x: 0,
+                y: 0
+              };
+
+            }
+          });
+          _myTrait_.initProjection = function(p1, p2) {
+
+            iVect.y = p2.y - p1.y;
+            iVect.x = p2.x - p1.x;
+
+            jVect.y = iVect.y;
+            jVect.x = iVect.x;
+
+            this.normalize(iVect);
+            this.normalize(jVect);
+
+            this.rotate(jVect, Math.PI / 2);
+
+            pBase.x = p1.x;
+            pBase.y = p1.y;
+
+
+          }
+          _myTrait_.length = function(p1) {
+
+            var dx = p1.x;
+            var dy = p1.y;
+            return Math.sqrt(dx * dx + dy * dy);
+
+          }
+          _myTrait_.linesIntersect = function(p0, p1, v0, v1) {
+
+            var x1 = p0.x,
+              y1 = p0.y,
+              x2 = p1.x,
+              y2 = p1.y,
+              x3 = v0.x,
+              y3 = v0.y,
+              x4 = v1.x,
+              y4 = v1.y;
+
+            var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+            var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+            if (isNaN(x) || isNaN(y)) {
+              return false;
+            } else {
+              if (x1 >= x2) {
+                if (!(x2 <= x && x <= x1)) {
+                  return false;
+                }
+              } else {
+                if (!(x1 <= x && x <= x2)) {
+                  return false;
+                }
+              }
+              if (y1 >= y2) {
+                if (!(y2 <= y && y <= y1)) {
+                  return false;
+                }
+              } else {
+                if (!(y1 <= y && y <= y2)) {
+                  return false;
+                }
+              }
+              if (x3 >= x4) {
+                if (!(x4 <= x && x <= x3)) {
+                  return false;
+                }
+              } else {
+                if (!(x3 <= x && x <= x4)) {
+                  return false;
+                }
+              }
+              if (y3 >= y4) {
+                if (!(y4 <= y && y <= y3)) {
+                  return false;
+                }
+              } else {
+                if (!(y3 <= y && y <= y4)) {
+                  return false;
+                }
+              }
+            }
+            return true;
+
+          }
+          _myTrait_.mirrorVector = function(v1, along, base) {
+
+            // the direction tangent and normal are normalized and the vector is projected into it            
+            tn1.x = along.x - base.x;
+            tn1.y = along.y - base.y;
+            nv1.x = -tn1.y;
+            nv1.y = tn1.x;
+
+            v1.x = v1.x - base.x;
+            v1.y = v1.y - base.y;
+
+            // if the 'j' or normal projection is positive, turn around
+            if (this.dotProd(v1, nv1) > 0)
+              this.rotate(nv1, Math.PI);
+
+            this.normalize(tn1);
+            this.normalize(nv1);
+
+            // Create positive coordinates of the projection of the vector to the 'base' cordinates
+            var nvProd = Math.abs(this.dotProd(v1, nv1));
+            //             tnProd = Math.abs( this.dotProd(v1,tn1) );
+
+            var tnProd = this.dotProd(v1, tn1);
+            // then, project the length of the base vectors to get the new vector space
+            v1.x = nv1.x * nvProd + tn1.x * tnProd,
+            v1.y = nv1.y * nvProd + tn1.y * tnProd;
+
+            v1.x += base.x;
+            v1.y += base.y;
+
+            return v1;
+
+          }
+          _myTrait_.normalize = function(v) {
+
+            var len = Math.sqrt(v.x * v.x + v.y * v.y);
+
+            if (len == 0) {
+              throw "Error normalizing vector: the length of the vector was zero";
+            }
+
+            v.x = v.x / len;
+            v.y = v.y / len;
+            return v;
+
+          }
+          _myTrait_.opposeVector = function(v1, along) {
+
+
+            // the direction tangent and normal are normalized and the vector is projected into it            
+            tn1.x = along, x;
+            tn1.y = along.y;
+            nv1.x = -tn1.y;
+            nv1.y = tn1.x;
+
+            this.normalize(tn1);
+            this.normalize(nv1);
+
+            // Important: turn the tangent to opposing direction...
+            this.rotate(tn1, Math.PI);
+
+            // Create the projection of the vector to the 'base' cordinates
+            var nvProd = Math.abs(jsMath.dotProd(v1, nv1)),
+              tnProd = Math.abs(jsMath.dotProd(v1, tn1));
+
+            // if the 'j' or normal projection is negative, turn around
+            if (this.dotProd(v1, nv1) < 0)
+              this.rotate(nv1, Math.PI);
+
+            // then, project the length of the vector to get the new vector
+            v1.x = nv1.x * nvProd + tn1.x * tnProd,
+            v1.y = nv1.y * nvProd + tn1.y * tnProd;
+
+            return v1;
+
+          }
+          _myTrait_.pointInTriangle = function(p, p0, p1, p2) {
+
+
+            var A = 1 / 2 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y);
+            var sign = A < 0 ? -1 : 1;
+            var s = (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y) * sign;
+            var t = (p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y) * sign;
+
+            return s > 0 && t > 0 && (s + t) < 2 * A * sign;
+
+
+          }
+          _myTrait_.pointInTriangleBc = function(p, bb) {
+
+            var A = bb.A;
+            var sign = bb.sign;
+            var s = (bb.s1 + bb.s2 * p.x + bb.s3 * p.y);
+            var t = (bb.t1 + bb.t2 * p.x + bb.t3 * p.y);
+
+            return s > 0 && t > 0 && (s + t) < 2 * A * sign;
+
+
+          }
+          _myTrait_.project = function(vectorToProject) {
+
+
+            var p = vectorToProject;
+
+            pVector.x = p.x - pBase.x;
+            pVector.y = p.y - pBase.y;
+
+            prodResult.i = this.dotProd(pVector, iVect);
+            prodResult.j = this.dotProd(pVector, jVect);
+
+            return prodResult;
+
+          }
+          _myTrait_.rotate = function(v, angle) {
+
+
+            var s = Math.sin(angle);
+            var c = Math.cos(angle);
+
+            var x = v.x,
+              y = v.y;
+
+            v.x = x * c + y * s;
+            v.y = -x * s + y * c;
+
+            return v;
+
+          }
+          _myTrait_.rotateAround = function(angle, v, around) {
+
+            this.sub(v, around);
+            this.rotate(v, angle);
+            this.add(v, around);
+
+          }
+          _myTrait_.sub = function(v1, v2) {
+
+            v1.x = v1.x - v2.x;
+            v1.y = v1.y - v2.y;
+
+          }
+          _myTrait_.tangentNormal = function(v1, v2, v3) {
+
+
+            var t1 = {};
+            t1.x = v2.x - v1.x;
+            t1.y = v2.y - v1.y;
+            var t2 = {};
+            t2.x = v3.x - v2.x;
+            t2.y = v3.y - v2.y;
+
+            var p = {
+              x: t1.x + t2.x,
+              y: t1.y + t2.y
+            };
+            return this.normalize(p);
+
+          }
+          _myTrait_.triangleArea = function(A, B, C) {
+
+
+            var area = A.x * (B.y - C.y) +
+              B.x * (C.y - A.y) +
+              C.x * (A.y - B.y);
+
+            return Math.abs(area / 2);
+
+          }
+          _myTrait_.triangleInTriangle = function(p0, p1, p2, q0, q1, q2) {
+
+
+            var bb = this.getBarCoeffs(p0, p1, p2);
+
+            if (this.pointInTriangleBc(q0, bb)) return true;
+            if (this.pointInTriangleBc(q1, bb)) return true;
+            if (this.pointInTriangleBc(q2, bb)) return true;
+
+            var bb = this.getBarCoeffs(q0, q1, q2);
+
+            if (this.pointInTriangleBc(p0, bb)) return true;
+            if (this.pointInTriangleBc(p1, bb)) return true;
+            if (this.pointInTriangleBc(p2, bb)) return true;
+
+
+            if (this.linesIntersect(p0, p1, q0, q1)) return true;
+            if (this.linesIntersect(p1, p2, q0, q1)) return true;
+            if (this.linesIntersect(p2, p0, q0, q1)) return true;
+
+            if (this.linesIntersect(p0, p1, q1, q2)) return true;
+            if (this.linesIntersect(p1, p2, q1, q2)) return true;
+            if (this.linesIntersect(p2, p0, q1, q2)) return true;
+
+            if (this.linesIntersect(p0, p1, q2, q0)) return true;
+            if (this.linesIntersect(p1, p2, q2, q0)) return true;
+            if (this.linesIntersect(p2, p0, q2, q0)) return true;
+
+            return false;
+
+          }
+          _myTrait_.unProject = function(projectedVector) {
+
+            var p = projectedVector;
+            deVector.x = p.i * iVect.x + p.j * jVect.x;
+            deVector.y = p.i * iVect.y + p.j * jVect.y;
+
+            deVector.x += pBase.x;
+            deVector.y += pBase.y;
+            return deVector;
+
+          }
+        }(this));
+      }
+      var jsVectors = function(a, b, c, d, e, f, g, h) {
+        if (this instanceof jsVectors) {
+          var args = [a, b, c, d, e, f, g, h];
+          if (this.__factoryClass) {
+            var m = this;
+            var res;
+            this.__factoryClass.forEach(function(initF) {
+              res = initF.apply(m, args);
+            });
+            if (Object.prototype.toString.call(res) == '[object Function]') {
+              if (res._classInfo.name != jsVectors._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+            } else {
+              if (res) return res;
+            }
+          }
+          if (this.__traitInit) {
+            var m = this;
+            this.__traitInit.forEach(function(initF) {
+              initF.apply(m, args);
+            })
+          } else {
+            if (typeof this.init == 'function')
+              this.init.apply(this, args);
+          }
+        } else return new jsVectors(a, b, c, d, e, f, g, h);
+      };
+      jsVectors._classInfo = {
+        name: 'jsVectors'
+      };
+      jsVectors.prototype = new jsVectors_prototype();
+      if (typeof(window) != 'undefined') window['jsVectors'] = jsVectors;
+      if (typeof(window) != 'undefined') window['jsVectors_prototype'] = jsVectors_prototype;;
+      (function(_myTrait_) {
+        _myTrait_.bezierSplit = function(P0, P1, P2, P3, t) {
+          var v = {};
+          v.p1 = (1 - t) * P0 + t * P1;
+          var m2 = (1 - t) * P1 + t * P2;
+          v.p5 = (1 - t) * P2 + t * P3;
+
+          v.p2 = (1 - t) * v.p1 + t * m2;
+          v.p4 = (1 - t) * m2 + t * v.p5;
+          v.p3 = (1 - t) * v.p2 + t * v.p4;
+
+          return v;
+        }
+        _myTrait_.endPoint = function(pv, m, fn) {
+
+          if (!pv) {
+            pv = {
+              x: 0,
+              y: 0,
+              z: 0
+            }
+          }
+          if (!m) m = quaternion();
+
+          var me = this,
+            cnt = 0;
+
+          if (!fn) {
+            fn = function(q) {
+              return q;
+            }
+          }
+
+          this.list.forEach(function(c) {
+
+            cnt++;
+            if (c.cmd == "Q") {
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                ii++;
+              });
+            }
+
+            if (c.cmd == "M") {
+
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+              });
+            }
+
+            if (c.cmd == "L") {
+
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+              });
+            }
+
+            if (c.cmd == "C") {
+
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                ii++;
+              });
+            }
+          })
+
+          return pv;
+
+        }
+        if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit"))
+          _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+        if (!_myTrait_.__traitInit) _myTrait_.__traitInit = []
+        _myTrait_.__traitInit.push(function(list) {
+
+          /*
+  list of path iterators
+ 
+   {
+        q : quaternion,
+        d : distance
+   },
+   {
+        q : quaternion,
+        d : distance
+   },   
+*/
+
+          this.list = list;
+
+        });
+        _myTrait_.partToSvgPath = function(start, end, pv, m) {
+
+          var str = "";
+          if (!pv) {
+            pv = {
+              x: 0,
+              y: 0,
+              z: 0
+            }
+          }
+          if (!m) m = quaternion();
+
+          this.addedObjects = [];
+          var me = this,
+            cnt = 0;
+
+          this.list.forEach(function(c) {
+
+            cnt++;
+
+            if (cnt < start) return;
+            if (cnt > end) return;
+
+            var g = _e("g");
+            g.circle().attr({
+              fill: "#ffaa88",
+              cx: pv.x,
+              cy: pv.y,
+              r: 10
+            });
+            g.svg_text().attr({
+              x: pv.x,
+              y: pv.y + 10,
+              "font-size": 20,
+              "fill": "black"
+            }).text(cnt + "");
+            me.addedObjects.push(g);
+
+            if (c.cmd == "Q") {
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                if (ii == 0) {
+                  str += "Q ";
+                }
+                str += " " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+                ii++;
+              });
+            }
+
+            if (c.cmd == "M") {
+
+              c.path.forEach(function(p) {
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                str += "M " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+              });
+            }
+
+            if (c.cmd == "L") {
+
+              c.path.forEach(function(p) {
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                str += "L " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+              });
+            }
+
+            if (c.cmd == "C") {
+
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                if (ii == 0) {
+                  str += "C ";
+                }
+                str += " " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+                ii++;
+              });
+
+
+            }
+
+
+
+
+            // no screen projection here...
+
+            /*
+               if(p.sub) {
+                   var ii = pathIterator( p.sub );
+                   var subQ = quaternion();
+                   subQ.copy( m );
+                   str+= ii.toSvgPath({
+                       x : pv.x,
+                       y : pv.y,
+                       z : pv.z
+                   }, subQ);
+               }
+               */
+
+          })
+
+          return str;
+
+          /*
+           
+           var v = m.projectVector({
+               x : 100,
+               y : 0,
+               z : 0
+           });
+           
+           main.p().text(JSON.stringify(v));
+           var vLen = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+           main.p().text("len = "+ vLen); 
+           
+           m.multiply( step2 );
+           
+           var v = m.projectVector({
+               x : 100,
+               y : 0,
+               z : 0
+           });
+           
+           main.p().text(JSON.stringify(v));
+           var vLen = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+           main.p().text("len = "+ vLen);
+           */
+        }
+        _myTrait_.pathFunction = function(t) {
+          /*
+                   this.initBezier();
+                   var ntCnt = this.getSegmentCount();
+                   var t1 = ntCnt * t;
+                   var t_index = Math.floor( t1 );
+                   var seg = this.getSegmentNro(t_index);
+                   var sub_t = t1 - t_index;
+                   
+                   // for example ntCnt = 10
+                   // t = 9,5
+                   var stepLen = 1 / ntCnt,        // 0,1
+                       nowStep = t_index / ntCnt,  // 0,9
+                       totStep = t,                // 0,95
+                       remStep = totStep - nowStep, // 0,05
+                       relStep = remStep / stepLen; // 0,05 / 0,1 = 0,5
+                   
+                   var bez = seg.bezier();
+                   // console.log("Rel step "+relStep);
+                   pathFnData.x = bez.x(relStep);
+                   pathFnData.y = bez.y(relStep);
+                   var nn = bez.tangent(relStep, true);
+                   
+                   pathFnData.normal.x = nn.x;
+                   pathFnData.normal.y = nn.y;
+                   
+                   fn(pathFnData);
+           */
+        }
+        _myTrait_.quadToCubic = function(P0, P1, P2) {
+          //CP1 = QP0 + 2/3 *(QP1-QP0)
+          //CP2 = QP2 + 2/3 *(QP1-QP2)
+
+          return {
+            p0: P0,
+            p1: P0 + 2 / 3 * (P1 - P0),
+            p2: P2 + 2 / 3 * (P1 - P2),
+            p3: P2
+          }
+
+        }
+        _myTrait_.toSvgCubicPath = function(pv, m) {
+          var str = "";
+          if (!pv) {
+            pv = {
+              x: 0,
+              y: 0,
+              z: 0
+            }
+          }
+          if (!m) m = quaternion();
+
+          var ii = 0;
+          this.list.forEach(function(p) {
+            var dv = {
+              x: p.d,
+              y: 0,
+              z: 0
+            };
+            m.multiply(p.q);
+            var v = m.projectVector(dv);
+            pv.x += v.x;
+            pv.y += v.y;
+            pv.z += v.z;
+            // no screen projection here...
+            if (ii == 0) {
+              str += "C " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+            } else {
+              str += " " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+            }
+            ii++;
+
+
+          })
+
+          return str;
+        }
+        _myTrait_.toSvgPath = function(pv, m, fn) {
+
+          var str = "";
+          if (!pv) {
+            pv = {
+              x: 0,
+              y: 0,
+              z: 0
+            }
+          }
+          if (!m) m = quaternion();
+
+          this.addedObjects = [];
+          var me = this,
+            cnt = 0;
+
+          if (!fn) {
+            fn = function(q) {
+              return q;
+            }
+          }
+
+          this.list.forEach(function(c) {
+
+            cnt++;
+            /*
+               var g = _e("g");
+               g.circle().attr({
+                   fill : "#ffaa77",
+                   cx : pv.x,
+                   cy : pv.y,
+                   r : 10
+               });
+               g.svg_text().attr({
+                   x : pv.x,
+                   y : pv.y + 10,
+                   "font-size" : 20,
+                   "fill" : "#222222"
+               }).text(cnt+"");
+               me.addedObjects.push( g ); */
+
+            if (c.cmd == "Q") {
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                if (ii == 0) {
+                  str += "Q ";
+                }
+                str += " " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+                ii++;
+              });
+            }
+
+            if (c.cmd == "M") {
+
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                str += "M " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+              });
+            }
+
+            if (c.cmd == "L") {
+
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                str += "L " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+              });
+            }
+
+            if (c.cmd == "C") {
+
+
+              var ii = 0;
+              c.path.forEach(function(p) {
+                p = fn(p);
+                var dv = {
+                  x: p.d,
+                  y: 0,
+                  z: 0
+                };
+                m.multiply(p.q);
+                var v = m.projectVector(dv);
+                pv.x += v.x;
+                pv.y += v.y;
+                pv.z += v.z;
+                if (ii == 0) {
+                  str += "C ";
+                }
+                str += " " + pv.x.toFixed(3) + ", " + pv.y.toFixed(3);
+                ii++;
+              });
+
+
+            }
+
+
+
+
+            // no screen projection here...
+
+            /*
+               if(p.sub) {
+                   var ii = pathIterator( p.sub );
+                   var subQ = quaternion();
+                   subQ.copy( m );
+                   str+= ii.toSvgPath({
+                       x : pv.x,
+                       y : pv.y,
+                       z : pv.z
+                   }, subQ);
+               }
+               */
+
+          })
+
+          return str;
+
+          /*
+           
+           var v = m.projectVector({
+               x : 100,
+               y : 0,
+               z : 0
+           });
+           
+           main.p().text(JSON.stringify(v));
+           var vLen = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+           main.p().text("len = "+ vLen); 
+           
+           m.multiply( step2 );
+           
+           var v = m.projectVector({
+               x : 100,
+               y : 0,
+               z : 0
+           });
+           
+           main.p().text(JSON.stringify(v));
+           var vLen = Math.sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+           main.p().text("len = "+ vLen);
+           */
+        }
+      }(this));
+    }
+    var pathIterator = function(a, b, c, d, e, f, g, h) {
+      if (this instanceof pathIterator) {
+        var args = [a, b, c, d, e, f, g, h];
+        if (this.__factoryClass) {
+          var m = this;
+          var res;
+          this.__factoryClass.forEach(function(initF) {
+            res = initF.apply(m, args);
+          });
+          if (Object.prototype.toString.call(res) == '[object Function]') {
+            if (res._classInfo.name != pathIterator._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+          } else {
+            if (res) return res;
+          }
+        }
+        if (this.__traitInit) {
+          var m = this;
+          this.__traitInit.forEach(function(initF) {
+            initF.apply(m, args);
+          })
+        } else {
+          if (typeof this.init == 'function')
+            this.init.apply(this, args);
+        }
+      } else return new pathIterator(a, b, c, d, e, f, g, h);
+    };
+    pathIterator._classInfo = {
+      name: 'pathIterator'
+    };
+    pathIterator.prototype = new pathIterator_prototype();
+    if (typeof(window) != 'undefined') window['pathIterator'] = pathIterator;
+    if (typeof(window) != 'undefined') window['pathIterator_prototype'] = pathIterator_prototype;;
     (function(_myTrait_) {
       var _parsedData;
       _myTrait_.drawPath = function(ctx, w, h) {
@@ -1792,19 +3877,15 @@ var canvasContext_prototype = function() {
         this._all.forEach(function(cmd) {
 
           if (cmd.name == "M") {
-
             x = cmd.points[0];
             y = cmd.points[1];
             ctx.moveTo(x, y);
-
           }
 
           if (cmd.name == "m") {
-
             x = x + cmd.points[0];
             y = y + cmd.points[1];
             ctx.moveTo(x, y);
-
           }
 
           if (cmd.name == "q") {
@@ -1905,13 +3986,10 @@ var canvasContext_prototype = function() {
       }
       _myTrait_.findDimensions = function() {
 
-
         if (this._limits) return this._limits;
 
         var _firstX, _firstY;
-
-        var _minX, _minY, _maxX, _maxY,
-          x, y;
+        var _minX, _minY, _maxX, _maxY, x, y;
 
         var limits = function(x, y) {
 
@@ -2008,24 +4086,18 @@ var canvasContext_prototype = function() {
       }
       _myTrait_.fitPathInto = function(w, h) {
 
-
-        // return;
         var dim = this.findDimensions();
-
-        // console.log(dim);
 
         var allIn = true;
         for (var i = 0; i < 4; i++) {
           if (dim[i] < 0 || dim[i] > w) allIn = false;
         }
-        //       if(allIn) return;
 
         var drawW = Math.abs(dim[2] - dim[0]),
           drawH = Math.abs(dim[3] - dim[1]);
 
         var flipY = false;
-        // the biggest Y is lie -100 and smalles -800 then we should
-        // flip the coordinates...
+
         if (Math.abs(dim[3]) < Math.abs(dim[1])) {
           flipY = true;
         }
@@ -2128,19 +4200,13 @@ var canvasContext_prototype = function() {
         this._all.forEach(fn);
       }
       _myTrait_.fromBezierArray = function(list) {
-
-
-
         var x, y, i, plen = list.length;
-
         var target = this._all;
-
         this._all = [];
 
         for (var i = 0; i < plen; i++) {
 
           var bez = list[i];
-
           if (i == 0) {
             var c = {
               name: "M",
@@ -2148,7 +4214,6 @@ var canvasContext_prototype = function() {
                 bez.point_x(0), bez.point_y(0)
               ]
             };
-
             this._all.push(c);
           }
           var c = {
@@ -2159,10 +4224,8 @@ var canvasContext_prototype = function() {
               bez.point_x(3), bez.point_y(3)
             ]
           };
-
           this._all.push(c);
         }
-
         this.saveToOriginals();
 
       }
@@ -2487,10 +4550,11 @@ var canvasContext_prototype = function() {
 
 
       }
-      _myTrait_.normalize = function() {
-
+      _myTrait_.normalize = function(width, height) {
+        if (!width) width = 800;
+        if (!height) height = 800;
         this.makePathAbsolute();
-        this.fitPathInto(800, 800);
+        this.fitPathInto(width, height);
 
       }
       _myTrait_.originals = function() {
@@ -2590,11 +4654,6 @@ var canvasContext_prototype = function() {
 
         var cmdStr = str.charAt(0),
           cmd = null;
-
-
-        // console.log("Command : "+cmdStr);
-
-
 
         if (cmdStr == "M") {
           cmd = this.initCmd(cmdStr);
@@ -2772,6 +4831,7 @@ var canvasContext_prototype = function() {
         return pathFnData;
       }
       _myTrait_.replacePartWith = function(index, pathStr, invert) {
+
         var createQuatPath2 = function(str, invert) {
           var parser = svgPathParser();
           parser.parse(str);
@@ -2816,7 +4876,6 @@ var canvasContext_prototype = function() {
 
       }
       _myTrait_.saveToOriginals = function() {
-
         this._original = JSON.parse(JSON.stringify(this._all));
 
       }
@@ -2840,8 +4899,6 @@ var canvasContext_prototype = function() {
         var _firstX, _firstY, x, y,
           str = "";
 
-        //console.log("ALL ");
-        //console.log(this._all);
         this._all.forEach(function(cmd) {
 
           if (cmd.name == "M") {
@@ -2849,11 +4906,9 @@ var canvasContext_prototype = function() {
             x = cmd.points[0];
             y = cmd.points[1];
             str += "M" + x + "," + y + " ";
-
           }
 
           if (cmd.name == "m") {
-
             x = x + cmd.points[0];
             y = y + cmd.points[1];
             str += "M" + x + "," + y + " ";
@@ -3026,10 +5081,8 @@ var canvasContext_prototype = function() {
         this._all.forEach(function(cmd) {
 
           if (cmd.name == "M") {
-
             x = cmd.points[0];
             y = cmd.points[1];
-
           }
 
           // Not relative coordinates... the algo is much simpler here...
@@ -3203,19 +5256,14 @@ var canvasContext_prototype = function() {
       }
       _myTrait_.transformPoints = function(fn) {
 
-
         // creates a backup of the "all" and then uses the "all" as target
         var all = this.originals();
-
         var point = {
           x: 0,
           y: 0
         };
-
         var x, y, i, plen = all.length;
-
         var target = this._all;
-
 
         for (var i = 0; i < plen; i++) {
 
@@ -3223,7 +5271,6 @@ var canvasContext_prototype = function() {
             tCmd = this._all[i];
 
           if (!cmd) return;
-
 
           if (cmd.name == "M") {
             point.x = cmd.points[0];
@@ -3960,6 +6007,9 @@ clearRect()	Clears the specified pixels within a given rectangle
       }
       return this._dirty;
     }
+    _myTrait_.n = function(t) {
+      return t.toFixed(5);
+    }
     _myTrait_.paintHead = function(t) {
 
       return ocPaintHead(this);
@@ -4352,7 +6402,8 @@ clearRect()	Clears the specified pixels within a given rectangle
           attrs: {
 
           }
-        };
+        },
+        me = this;
 
       // to reset the current tag settings...
       var resetSettings = function() {
@@ -4380,8 +6431,8 @@ clearRect()	Clears the specified pixels within a given rectangle
 
           p0y -= pp.y;
 
-          pathBuffer.push("M " + p0x + " " + p0y);
-          pathBuffer.push("A " + pp.x + "," + pp.y + " 0 1,0 " + (p0x + 0.1) + " " + p0y + " ");
+          pathBuffer.push("M " + me.n(p0x) + " " + me.n(p0y));
+          pathBuffer.push("A " + me.n(pp.x) + "," + me.n(pp.y) + " 0 1,0 " + me.n(p0x + 0.1) + " " + me.n(p0y) + " ");
 
         }
 
@@ -4398,8 +6449,8 @@ clearRect()	Clears the specified pixels within a given rectangle
             p2y = p.y;
 
           if (pathBuffer.length == 0)
-            pathBuffer.push("M " + sx + " " + sy);
-          pathBuffer.push("Q " + p1x + " " + p1y + " " + p2x + " " + p2y + " ");
+            pathBuffer.push("M " + me.n(sx) + " " + me.n(sy));
+          pathBuffer.push("Q " + me.n(p1x) + " " + me.n(p1y) + " " + me.n(p2x) + " " + me.n(p2y) + " ");
 
         }
 
@@ -4419,8 +6470,8 @@ clearRect()	Clears the specified pixels within a given rectangle
             p3y = p.y;
 
           if (pathBuffer.length == 0)
-            pathBuffer.push("M " + sx + " " + sy);
-          pathBuffer.push("C " + p1x + " " + p1y + " " + p2x + " " + p2y + " " + p3x + " " + p3y + " ");
+            pathBuffer.push("M " + me.n(sx) + " " + me.n(sy));
+          pathBuffer.push("C " + me.n(p1x) + " " + me.n(p1y) + " " + me.n(p2x) + " " + me.n(p2y) + " " + me.n(p3x) + " " + me.n(p3y) + " ");
 
         }
 
@@ -4429,7 +6480,7 @@ clearRect()	Clears the specified pixels within a given rectangle
             y = trans._point.ty1,
             sx = trans._point.tx0,
             sy = trans._point.ty0;
-          pathBuffer.push("M " + x + " " + y);
+          pathBuffer.push("M " + me.n(x) + " " + me.n(y));
         }
         if (cmd == "lineTo") {
           var x = trans._point.tx1,
@@ -4439,8 +6490,8 @@ clearRect()	Clears the specified pixels within a given rectangle
 
           // console.log("lineTo", sx,sy, x,y);
           if (pathBuffer.length == 0)
-            pathBuffer.push("M " + sx + " " + sy);
-          pathBuffer.push("L " + x + " " + y);
+            pathBuffer.push("M " + me.n(sx) + " " + me.n(sy));
+          pathBuffer.push("L " + me.n(x) + " " + me.n(y));
         }
 
         if (cmd == "stroke") {
